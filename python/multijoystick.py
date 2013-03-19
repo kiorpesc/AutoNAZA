@@ -47,7 +47,7 @@ import time
 
 # Allow for multiple joysticks
 joy = []
-serv = [90, 90, 0, 90, 95]
+
 
 # Handle joystick event
 def handleJoyEvent(e):
@@ -75,27 +75,27 @@ def handleJoyEvent(e):
                 pos = e.dict['value']
                 # convert joystick position to servo increment, 0-180
                 move = round(pos * 90, 0)
-                serv[0] = int(90 + move)
+                serv = int(90 + move)
                 # and send to Arduino over serial connection
-                #servo.move(1, serv)
+                servo.move(1, serv)
             # Y Axis
             elif (axis == "Y"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv[1] = int(90 + move)
-                #servo.move(2, serv)
+                serv = int(90 + move)
+                servo.move(2, serv)
             # Z Axis - on NAZA, servo 4
             elif (axis == "Z"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv[3] = int(90 + move)
-                #servo.move(4, serv)
+                serv = int(90 + move)
+                servo.move(4, serv)
             # Throttle - on NAZA, servo 3
             elif (axis == "Throttle"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv[2] = int(90 + move)
-                #servo.move(3, serv)
+                serv = int(90 + move)
+                servo.move(3, serv)
 
     # Assign actions for Button DOWN events
     elif e.type == pygame.JOYBUTTONDOWN:
@@ -110,18 +110,30 @@ def handleJoyEvent(e):
         # Button 3
         elif (e.dict['button'] == 2):
             print "Button 3 Down, Attitude Mode"
-            serv[4] = 95
+            servo.move(5, 95)
         # Button 4
         elif (e.dict['button'] == 3):
             print "Button 4 Down"
         # Button 5
         elif (e.dict['button'] == 4):
             print "Button 5 Down, Manual Mode"
-            serv[4] = 28
+            servo.move(5, 28)
         # Button 6
         elif (e.dict['button'] == 5):
             print "Button 6 Down"
             quit()
+        elif (e.dict['button'] == 6):
+            print "Button 7 Down"
+        elif (e.dict['button'] == 7):
+            print "Button 8 Down"
+        elif (e.dict['button'] == 8):
+            print "Button 9 Down"
+        elif (e.dict['button'] == 9):
+            print "Button 10 Down"
+        elif (e.dict['button'] == 10):
+            print "Button 11 Down"
+        elif (e.dict['button'] == 11):
+            print "Button 12 Down"
 
     # Assign actions for Button UP events
     elif e.type == pygame.JOYBUTTONUP:
@@ -145,6 +157,18 @@ def handleJoyEvent(e):
         # Button 6
         elif (e.dict['button'] == 5):
             print "Button 6 Up"
+        elif (e.dict['button'] == 6):
+            print "Button 7 Up"
+        elif (e.dict['button'] == 7):
+            print "Button 8 Up"
+        elif (e.dict['button'] == 8):
+            print "Button 9 Up"
+        elif (e.dict['button'] == 9):
+            print "Button 10 Up"
+        elif (e.dict['button'] == 10):
+            print "Button 11 Up"
+        elif (e.dict['button'] == 11):
+            print "Button 12 Up"
 
     # Assign actions for Coolie Hat Switch events
     elif e.type == pygame.JOYHATMOTION:
@@ -171,7 +195,7 @@ def output(line, stick):
 # Wait for joystick input
 def joystickControl():
     while True:
-        constantPWM()
+        #constantPWM()
         e = pygame.event.wait()
         if (e.type == pygame.JOYAXISMOTION or e.type == pygame.JOYBUTTONDOWN or e.type == pygame.JOYBUTTONUP or e.type == pygame.JOYHATMOTION):
             handleJoyEvent(e)
