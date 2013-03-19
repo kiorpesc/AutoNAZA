@@ -23,10 +23,20 @@ import serial
 #     usbport = '/dev/ttyUSB0'
 #   MacOSX example
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
-usbport = '/dev/ttyACM0'
+usbport0 = '/dev/ttyACM0'
+usbport1 = '/dev/ttyACM1'
 
 # Set up serial baud rate
-ser = serial.Serial(usbport, 9600, timeout=1)
+try:
+    ser = serial.Serial(usbport0, 9600, timeout=1)
+except:
+    print "\nTrying alternate port..."
+    try:
+        ser = serial.Serial(usbport1, 9600, timeout=1)
+    except:
+        print "\nCan't find serial port, exiting."
+        quit()
+
 
 def move(servo, angle):
     '''Moves the specified servo to the supplied angle.

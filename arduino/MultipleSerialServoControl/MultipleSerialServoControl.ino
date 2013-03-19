@@ -44,8 +44,9 @@ Servo gear;
 // min ~ 1100 us, max ~ 1950 us
 
 // Common servo setup values
-int minPulse = 900;   // minimum servo position, us (microseconds)
-int maxPulse = 1500;  // maximum servo position, us
+int minPulse = 1050;   // minimum servo position, us (microseconds)
+int minPulseCali = 50;
+int maxPulse = 1950;  // maximum servo position, us
 
 
 
@@ -54,6 +55,7 @@ int userInput[3];    // raw input from serial buffer, 3 bytes
 int startbyte;       // start byte, begin reading input
 int servo;           // which servo to pulse?
 int pos[6];
+int adjust[6];
 int i;               // iterator
 
 int userPos;
@@ -64,15 +66,18 @@ void setup()
   
   for(i = 0; i < 6; i++){
     pos[i] = 90;
+    adjust[i] = 100;
+
   }
   pos[3] = 180;
+  adjust[3] = 0;
   
   // Attach each Servo object to a digital pin
-  aileron.attach(3, minPulse, maxPulse);
-  elevator.attach(5, minPulse, maxPulse);
-  throttle.attach(6, minPulse, maxPulse);
-  rudder.attach(9, minPulse, maxPulse);
-  gear.attach(10, minPulse, maxPulse);
+  aileron.attach(3);
+  elevator.attach(5);
+  throttle.attach(6);
+  rudder.attach(9);
+  gear.attach(10);
   
   // TO ADD SERVOS:
   //   servo5.attach(YOUR_PIN, minPulse, maxPulse);
@@ -107,12 +112,12 @@ void loop()
       // Assign new position to appropriate servo
       // Change to assign to variables, need constant control input
       
-      pos[servo] = userPos;
-      aileron.write(pos[1]);    // move servo1 to 'pos'
-      elevator.write(pos[2]);
-      throttle.write(pos[3]);
-      rudder.write(pos[4]);
-      gear.write(pos[5]);
+      pos[servo] = map(userPos, 0, 180, minPulse, maxPulse);
+      aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
+      elevator.writeMicroseconds(pos[2]);
+      throttle.writeMicroseconds(pos[3]);
+      rudder.writeMicroseconds(pos[4]);
+      gear.writeMicroseconds(pos[5]);
 
    // TO ADD SERVOS:
    //     case 5:

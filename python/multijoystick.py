@@ -45,15 +45,16 @@ joy = []
 # Handle joystick event
 def handleJoyEvent(e):
     # Identify joystick axes and assign events
+    # Throttle and Z reversed?
     if e.type == pygame.JOYAXISMOTION:
         axis = "unknown"
         if (e.dict['axis'] == 0):
             axis = "X"
         if (e.dict['axis'] == 1):
             axis = "Y"
-        if (e.dict['axis'] == 2):
-            axis = "Throttle"
         if (e.dict['axis'] == 3):
+            axis = "Throttle"
+        if (e.dict['axis'] == 2):
             axis = "Z"
 
         # Convert joystick value to servo position for each axis
