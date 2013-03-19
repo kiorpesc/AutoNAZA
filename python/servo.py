@@ -25,14 +25,15 @@ import serial
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
 usbport0 = '/dev/ttyACM0'
 usbport1 = '/dev/ttyACM1'
+baud_rate = 9600
 
 # Set up serial baud rate
 try:
-    ser = serial.Serial(usbport0, 9600, timeout=1)
+    ser = serial.Serial(usbport0, baud_rate, timeout=1)
 except:
     print "\nTrying alternate port..."
     try:
-        ser = serial.Serial(usbport1, 9600, timeout=1)
+        ser = serial.Serial(usbport1, baud_rate, timeout=1)
     except:
         print "\nCan't find serial port, exiting."
         quit()

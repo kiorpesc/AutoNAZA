@@ -70,6 +70,7 @@ void setup()
   }
   pos[3] = 180;
   adjust[3] = 0;
+  pos[5] = 95;
   
   // Attach each Servo object to a digital pin
   aileron.attach(3);
