@@ -76,18 +76,18 @@ def handleJoyEvent(e):
                 move = round(pos * 90, 0)
                 serv = int(90 + move)
                 servo.move(2, serv)
-            # Z Axis
+            # Z Axis - on NAZA, servo 4
             if (axis == "Z"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
                 serv = int(90 + move)
-                servo.move(3, serv)
-            # Throttle
+                servo.move(4, serv)
+            # Throttle - on NAZA, servo 3
             if (axis == "Throttle"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
                 serv = int(90 + move)
-                servo.move(4, serv)
+                servo.move(3, serv)
 
     # Assign actions for Button DOWN events
     elif e.type == pygame.JOYBUTTONDOWN:
@@ -95,7 +95,7 @@ def handleJoyEvent(e):
         if (e.dict['button'] == 0):
             print "Trigger Down"
             # Set pin 13 LED to HIGH for digital on/off demo
-            servo.move(99, 180)
+            # servo.move(99, 180)
         # Button 2
         if (e.dict['button'] == 1):
             print "Button 2 Down"
@@ -119,7 +119,7 @@ def handleJoyEvent(e):
         if (e.dict['button'] == 0):
             print "Trigger Up"
             # Set pin 13 LED to LOW for digital on/off demo
-            servo.move(99, 0)
+            # servo.move(99, 0)
         # Button 2
         if (e.dict['button'] == 1):
             print "Button 2 Up"
@@ -150,7 +150,7 @@ def handleJoyEvent(e):
             print "Hat Up"
         if (e.dict['value'][0] == 0 and e.dict['value'][1] == 0):
             print "Hat Centered"
-            servo.move(4, 90)
+            #servo.move(4, 90)
 		
     else:
         pass

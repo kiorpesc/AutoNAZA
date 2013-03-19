@@ -23,7 +23,7 @@ import serial
 #     usbport = '/dev/ttyUSB0'
 #   MacOSX example
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
-usbport = '/dev/tty.usbserial-FTALLOK2'
+usbport = '/dev/ttyACM0'
 
 # Set up serial baud rate
 ser = serial.Serial(usbport, 9600, timeout=1)
