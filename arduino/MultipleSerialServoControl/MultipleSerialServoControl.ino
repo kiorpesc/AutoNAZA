@@ -41,11 +41,10 @@ Servo gear;
 //   etc...
 
 //NAZA initial values (uncalibrated)
-// min ~ 1100 us, max ~ 1950 us
+// min ~ 1050 us, max ~ 1950 us
 
 // Common servo setup values
 int minPulse = 1050;   // minimum servo position, us (microseconds)
-int minPulseCali = 50;
 int maxPulse = 1950;  // maximum servo position, us
 
 
@@ -55,7 +54,7 @@ int userInput[3];    // raw input from serial buffer, 3 bytes
 int startbyte;       // start byte, begin reading input
 int servo;           // which servo to pulse?
 int pos[6];
-int adjust[6];
+int adjust[6];        //might be used for manual calibration
 int i;               // iterator
 
 int userPos;
@@ -66,7 +65,7 @@ void setup()
   
   for(i = 0; i < 6; i++){
     pos[i] = 90;
-    adjust[i] = 100;
+    adjust[i] = 25;
 
   }
   pos[3] = 180;
