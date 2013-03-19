@@ -39,6 +39,8 @@ except:
 	print "\nPlease install the 'pygame' module <http://www.pygame.org/>.\n"
 	quit()
 
+import time
+
 # Allow for multiple joysticks
 joy = []
 serv = [90, 90, 0, 90, 95]
@@ -169,6 +171,7 @@ def joystickControl():
         e = pygame.event.wait()
         if (e.type == pygame.JOYAXISMOTION or e.type == pygame.JOYBUTTONDOWN or e.type == pygame.JOYBUTTONUP or e.type == pygame.JOYHATMOTION):
             handleJoyEvent(e)
+        #time.sleep(.01)
 
 # Send constant control values
 def constantPWM():

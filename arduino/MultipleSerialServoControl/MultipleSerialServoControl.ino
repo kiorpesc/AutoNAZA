@@ -60,17 +60,17 @@ int i;               // iterator
 int userPos;
 
 void setup() 
-{ 
-  delay(5000);
-  
+{    
+  //set controls to center
   for(i = 0; i < 6; i++){
-    pos[i] = 90;
-    adjust[i] = 25;
-
+    pos[i] = 1500;
   }
-  pos[3] = 180;
-  adjust[3] = 0;
-  pos[5] = 95;
+  //set throttle to 0
+  pos[3] = 1950;
+  //set gear switch to Attitude mode
+  pos[5] = 1525;
+  
+  delay(5000);
   
   // Attach each Servo object to a digital pin
   aileron.attach(3);
@@ -87,7 +87,7 @@ void setup()
   //pinMode(ledPin, OUTPUT);
 
   // Open the serial connection, 9600 baud
-  Serial.begin(9600);
+  Serial.begin(115200);
 } 
 
 void loop() 
@@ -113,31 +113,14 @@ void loop()
       // Change to assign to variables, need constant control input
       
       pos[servo] = map(userPos, 0, 180, minPulse, maxPulse);
+
       aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
       elevator.writeMicroseconds(pos[2]);
       throttle.writeMicroseconds(pos[3]);
       rudder.writeMicroseconds(pos[4]);
       gear.writeMicroseconds(pos[5]);
-
-   // TO ADD SERVOS:
-   //     case 5:
-   //       servo5.write(pos);
-   //       break;
-   // etc...
-
-        /* LED on Pin 13 for digital on/off demo
-        case 99:
-          if (pos == 180) {
-            if (pinState == LOW) { pinState = HIGH; }
-            else { pinState = LOW; }
-          }
-          if (pos == 0) {
-            pinState = LOW;
-          }
-          digitalWrite(ledPin, pinState);
-          break;
-          */
-     
     }
+
   }
+
 }
