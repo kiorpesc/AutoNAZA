@@ -25,7 +25,7 @@ import serial
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
 usbport0 = '/dev/ttyACM0'
 usbport1 = '/dev/ttyACM1'
-baud_rate = 115200
+baud_rate = 9600
 
 # Set up serial baud rate
 try:
