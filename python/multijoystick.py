@@ -4,16 +4,16 @@
 # Module:   multijoystick.py
 # Created:  2 April 2008
 # Last Updated: 19 March 2013
-# Author:   Brian D. Wendt, Matt Sowden
+# Author:   Brian D. Wendt, Matt Sowden, Charles Kiorpes
 #   http://principialabs.com/
 #   http://exabase.org/
 # Version:  0.6.1.2.3.BCCC
 # License:  GPLv3
 #   http://www.fsf.org/licensing/
 '''
-Provides four-axis joystick servo control from a PC
-using the Arduino "MultipleSerialServoControl" sketch
-and the Python "servo.py" serial abstraction module.
+Provides four-axis control of the DJI NAZA flight controller
+using a regular USB joystick (tested using Logitech Extreme3D Pro).
+Handles 12 buttons, a hat, x y and z axes, and throttle.
 
 This code was adapted from:
   http://svn.lee.org/swarm/trunk/mothernode/python/multijoy.py
@@ -59,10 +59,10 @@ def handleJoyEvent(e):
             axis = "X"
         elif (e.dict['axis'] == 1):
             axis = "Y"
-        elif (e.dict['axis'] == 3):
-            axis = "Throttle"
         elif (e.dict['axis'] == 2):
             axis = "Z"
+        elif (e.dict['axis'] == 3):
+            axis = "Throttle"
 
         # Convert joystick value to servo position for each axis
         if (axis != "unknown"):
@@ -102,8 +102,6 @@ def handleJoyEvent(e):
         # Button 1 (trigger)
         if (e.dict['button'] == 0):
             print "Trigger Down"
-            # Set pin 13 LED to HIGH for digital on/off demo
-            # servo.move(99, 180)
         # Button 2
         elif (e.dict['button'] == 1):
             print "Button 2 Down"
@@ -140,8 +138,6 @@ def handleJoyEvent(e):
         # Button 1 (trigger)
         if (e.dict['button'] == 0):
             print "Trigger Up"
-            # Set pin 13 LED to LOW for digital on/off demo
-            # servo.move(99, 0)
         # Button 2
         elif (e.dict['button'] == 1):
             print "Button 2 Up"
@@ -224,8 +220,6 @@ def main():
         joy.append(myjoy)
         print "Joystick %d: " % (i) + joy[i].get_name()
     print "Depress joystick button 6 to quit.\n"
-    
-    #attempting to avoid RX-ERR by giving values right away instead of waiting for input
 
     # Run joystick listener loop
     joystickControl()
