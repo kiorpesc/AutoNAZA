@@ -22,23 +22,30 @@
  * License:  GPLv3
  *   (http://www.fsf.org/licensing/)
  *
+ * Modified: 19 March 2013
+ * Author:   Charles Kiorpes
+ *
  */
 
 // Import the Arduino Servo library
 #include <Servo.h> 
 
 // Create a Servo object for each servo
-Servo servo1;
-Servo servo2;
-Servo servo3;
-Servo servo4;
+Servo aileron;
+Servo elevator;
+Servo throttle;
+Servo rudder;
+Servo gear;
 // TO ADD SERVOS:
 //   Servo servo5;
 //   etc...
 
+//NAZA initial values (uncalibrated)
+// min ~ 1100 us, max ~ 1950 us
+
 // Common servo setup values
-int minPulse = 600;   // minimum servo position, us (microseconds)
-int maxPulse = 2400;  // maximum servo position, us
+int minPulse = 1100;   // minimum servo position, us (microseconds)
+int maxPulse = 1950;  // maximum servo position, us
 
 // User input for servo and position
 int userInput[3];    // raw input from serial buffer, 3 bytes
@@ -47,17 +54,15 @@ int servo;           // which servo to pulse?
 int pos;             // servo angle 0-180
 int i;               // iterator
 
-// LED on Pin 13 for digital on/off demo
-int ledPin = 13;
-int pinState = LOW;
-
 void setup() 
 { 
   // Attach each Servo object to a digital pin
-  servo1.attach(2, minPulse, maxPulse);
-  servo2.attach(3, minPulse, maxPulse);
-  servo3.attach(4, minPulse, maxPulse);
-  servo4.attach(5, minPulse, maxPulse);
+  aileron.attach(2, minPulse, maxPulse);
+  elevator.attach(3, minPulse, maxPulse);
+  throttle.attach(4, minPulse, maxPulse);
+  rudder.attach(5, minPulse, maxPulse);
+  gear.attach(6, minPulse, maxPulse);
+  
   // TO ADD SERVOS:
   //   servo5.attach(YOUR_PIN, minPulse, maxPulse);
   //   etc...
@@ -91,17 +96,19 @@ void loop()
       // Assign new position to appropriate servo
       switch (servo) {
         case 1:
-          servo1.write(pos);    // move servo1 to 'pos'
+          aileron.write(pos);    // move servo1 to 'pos'
           break;
         case 2:
-          servo2.write(pos);
+          elevator.write(pos);
           break;
         case 3:
-          servo3.write(pos);
+          throttle.write(pos);
           break;
         case 4:
-          servo4.write(pos);
+          rudder.write(pos);
           break;
+        case 5;
+          gear.write(pos);
 
    // TO ADD SERVOS:
    //     case 5:
@@ -109,7 +116,7 @@ void loop()
    //       break;
    // etc...
 
-        // LED on Pin 13 for digital on/off demo
+        /* LED on Pin 13 for digital on/off demo
         case 99:
           if (pos == 180) {
             if (pinState == LOW) { pinState = HIGH; }
@@ -120,6 +127,7 @@ void loop()
           }
           digitalWrite(ledPin, pinState);
           break;
+          */
       }
     }
   }
