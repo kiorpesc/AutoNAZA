@@ -87,7 +87,7 @@ void setup()
   //pinMode(ledPin, OUTPUT);
 
   // Open the serial connection, 9600 baud
-  Serial.begin(115200);
+  Serial.begin(9600);
 } 
 
 void loop() 
@@ -114,13 +114,12 @@ void loop()
       
       pos[servo] = map(userPos, 0, 180, minPulse, maxPulse);
 
+    }
+
+  }
       aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
       elevator.writeMicroseconds(pos[2]);
       throttle.writeMicroseconds(pos[3]);
       rudder.writeMicroseconds(pos[4]);
       gear.writeMicroseconds(pos[5]);
-    }
-
-  }
-
 }
