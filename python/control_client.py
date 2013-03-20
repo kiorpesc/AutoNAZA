@@ -42,4 +42,7 @@ reply = s.recv(10)
 
 print reply
 
+for x in range(10):
+    print s.recv(10)
+
 s.close()

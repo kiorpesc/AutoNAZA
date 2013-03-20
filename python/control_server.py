@@ -25,8 +25,9 @@ print 'Connected with ' + addr[0] + ':' + str(addr[1])
 data = conn.recv(10)
 if data == 'AutoNAZAOn':
     conn.sendall('potatoTime')
-    while True:
-else:
-    conn.close()
+    for x in range(10):
+        control = chr(255) + chr(90) + chr(90) + chr(0) + chr(95) + chr(0) + chr(90) + chr(90) + chr(x) + chr(254)
+        conn.sendall(control)
 
+conn.close()
 s.close()
