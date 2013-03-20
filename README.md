@@ -8,11 +8,11 @@ There's not much here.
 First steps:
 ============
 
-1 - Control all NAZA inputs with arduino and python (yes, python).
+DONE 1 - Control all NAZA inputs with arduino and python (yes, python).
 
       -Using serial communications between python and arduino.
       
-2 - Introduce pyGame to allow joystick control, test and tweak max values
+DONE 2 - Introduce pyGame to allow joystick control, test and tweak max values
 
 3 - Smooth transition from joystick control to tx/rx control in case of network failure
 
