@@ -1,6 +1,13 @@
 import socket
 import sys
 
+def convert(s):
+    values = map(ord, s)
+    output = ''
+    for x in values:
+        output += (str(x) + ' ')
+    print output
+
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 except socket.error, msg:
@@ -42,4 +49,11 @@ reply = s.recv(10)
 
 print reply
 
+for x in range(10):
+    reply = s.recv(10)
+    convert(reply)
+
 s.close()
+
+
+

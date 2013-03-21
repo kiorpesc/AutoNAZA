@@ -1,34 +1,41 @@
 import socket
 import sys
 
-HOST = ''
-PORT = 8888
+#conn, s
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print 'Socket created'
+def create_socket():
 
-try:
-    s.bind((HOST, PORT))
-except socket.error, msg:
-    print 'Bind failed. Error code: ' + str(msg[0]) + ' Message: ' + str(msg[1])
-    sys.exit()
+    HOST = ''
+    PORT = 8888
 
-print 'Socket bind complete.'
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print 'Socket created'
 
-s.listen(10)
-print 'Socket now listening'
+    try:
+        s.bind((HOST, PORT))
+    except socket.error, msg:
+        print 'Bind failed. Error code: ' + str(msg[0]) + ' Message: ' + str(msg[1])
+        sys.exit()
 
-conn, addr = s.accept()
+    print 'Socket bind complete.'
 
-print 'Connected with ' + addr[0] + ':' + str(addr[1])
+    s.listen(10)
+    print 'Socket now listening'
 
-data = conn.recv(10)
-if data == 'AutoNAZAOn':
-    conn.sendall('potatoTime')
-    while True:
-        control = chr(255) + chr(90) + chr(90) + chr(0) + chr(95) + chr(0) + chr(90) + chr(90) + chr(0) + chr(254)
-        conn.sendall(control)
-else:
+    conn, addr = s.accept()
+
+    print 'Connected with ' + addr[0] + ':' + str(addr[1])
+
+    data = conn.recv(10)
+    if data == 'AutoNAZAOn':
+        conn.sendall('potatoTime')
+        #for x in range(10):
+        #    control = chr(255) + chr(90) + chr(90) + chr(90) + chr(0) + chr(95) + chr(90) + chr(90) + chr(x) + chr(254)
+        #    conn.sendall(control)
+
+def send_command(s):
+    conn.sendall(s)
+
+def close_socket():
     conn.close()
-
-s.close()
+    s.close()

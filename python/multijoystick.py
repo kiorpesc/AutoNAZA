@@ -32,22 +32,34 @@ print "        Hey There Everyone!"
 print "================================================"
 
 # Import dependent Python modules
-try:
-	import servo
-except:
-	print "\nPlease ensure that 'servo.py' is installed in the current directory.\n"
-	quit()
+#try:
+#	import servo
+#except:
+#	print "\nPlease ensure that 'servo.py' is installed in the current directory.\n"
+#	quit()
 try:
 	import pygame.joystick
 except:
 	print "\nPlease install the 'pygame' module <http://www.pygame.org/>.\n"
 	quit()
 
-import time
+import socket
+import sys
+
+try:
+    import control_server
+except:
+    print "\nServer file not found."
 
 # Allow for multiple joysticks
 joy = []
+serv = [255, 90, 90, 90, 0, 95, 90, 90, 0, 254]
 
+def command_string():
+    output = ''
+    for x in serv:
+        output += chr(x)
+    return output
 
 # Handle joystick event
 def handleJoyEvent(e):
@@ -75,27 +87,27 @@ def handleJoyEvent(e):
                 pos = e.dict['value']
                 # convert joystick position to servo increment, 0-180
                 move = round(pos * 90, 0)
-                serv = int(90 + move)
+                serv[1] = int(90 + move)
                 # and send to Arduino over serial connection
-                servo.move(1, serv)
+                #servo.move(1, serv)
             # Y Axis
             elif (axis == "Y"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv = int(90 + move)
-                servo.move(2, serv)
+                serv[2] = int(90 + move)
+                #servo.move(2, serv)
             # Z Axis - on NAZA, servo 4
             elif (axis == "Z"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv = int(90 + move)
-                servo.move(4, serv)
+                serv[3] = int(90 + move)
+                #servo.move(4, serv)
             # Throttle - on NAZA, servo 3
             elif (axis == "Throttle"):
                 pos = e.dict['value']
                 move = round(pos * 90, 0)
-                serv = int(90 + move)
-                servo.move(3, serv)
+                serv[4] = int(90 + move)
+                #servo.move(3, serv)
 
     # Assign actions for Button DOWN events
     elif e.type == pygame.JOYBUTTONDOWN:
@@ -108,17 +120,19 @@ def handleJoyEvent(e):
         # Button 3
         elif (e.dict['button'] == 2):
             print "Button 3 Down, Attitude Mode"
-            servo.move(5, 95)
+            serv[5] = 95
+            #servo.move(5, 95)
         # Button 4
         elif (e.dict['button'] == 3):
             print "Button 4 Down"
         # Button 5
         elif (e.dict['button'] == 4):
             print "Button 5 Down, Manual Mode"
-            servo.move(5, 28)
+            serv[5] = 28
         # Button 6
         elif (e.dict['button'] == 5):
             print "Button 6 Down"
+            command_server.close_socket()
             quit()
         elif (e.dict['button'] == 6):
             print "Button 7 Down"
@@ -170,19 +184,22 @@ def handleJoyEvent(e):
     elif e.type == pygame.JOYHATMOTION:
         if (e.dict['value'][0] == -1):
             print "Hat Left"
-            servo.move(4, 0)
+            serv[6] = 0
         elif (e.dict['value'][0] == 1):
             print "Hat Right"
-            servo.move(4, 180)
+            serv[6] = 180
         elif (e.dict['value'][1] == -1):
             print "Hat Down"
         elif (e.dict['value'][1] == 1):
             print "Hat Up"
         elif (e.dict['value'][0] == 0 and e.dict['value'][1] == 0):
             print "Hat Centered"
+            serv[6] = 90
 		
     else:
         pass
+    
+    send_to_client()
 
 # Print the joystick position
 def output(line, stick):
@@ -195,7 +212,6 @@ def joystickControl():
         e = pygame.event.wait()
         if (e.type == pygame.JOYAXISMOTION or e.type == pygame.JOYBUTTONDOWN or e.type == pygame.JOYBUTTONUP or e.type == pygame.JOYHATMOTION):
             handleJoyEvent(e)
-        #time.sleep(.01)
 
 # Send constant control values
 def constantPWM():
@@ -205,8 +221,13 @@ def constantPWM():
     servo.move(4, serv[3])
     servo.move(5, serv[4])
 
+def send_to_client():
+    control_server.send_command(command_string())
+
 # Main method
 def main():
+    # initialize server
+    control_server.create_socket()
     # Initialize pygame
     pygame.joystick.init()
     pygame.display.init()
