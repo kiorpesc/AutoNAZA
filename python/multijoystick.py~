@@ -199,7 +199,7 @@ def handleJoyEvent(e):
     else:
         pass
     
-    send_to_client()
+    #send_to_client()
 
 # Print the joystick position
 def output(line, stick):
@@ -208,6 +208,7 @@ def output(line, stick):
 # Wait for joystick input
 def joystickControl():
     while True:
+        send_to_client()
         e = pygame.event.wait()
         if (e.type == pygame.JOYAXISMOTION or e.type == pygame.JOYBUTTONDOWN or e.type == pygame.JOYBUTTONUP or e.type == pygame.JOYHATMOTION):
             handleJoyEvent(e)

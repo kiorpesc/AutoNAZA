@@ -1,12 +1,21 @@
 import socket
 import sys
+import servo
+
+last = chr(255) + chr(90) + chr(90) + chr(90) + chr(0) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
 
 def convert(s):
+    global last
     values = map(ord, s)
     output = ''
-    for x in values:
-        output += (str(x) + ' ')
+    #this causes a backup - need to rate limit incoming control messages
+    #or only send to servos that have changed
+    for x in range(1, 6):
+        if values[x] != last[x]:
+            servo.move(x, values[x])
+        output +=str(values[x]) + ' '
     print output
+    last = s
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,7 +58,7 @@ reply = s.recv(10)
 
 print reply
 
-for x in range(10):
+while True:
     reply = s.recv(10)
     convert(reply)
 

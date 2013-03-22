@@ -15,7 +15,6 @@ for use with Arduino "MultipleSerialServoControl" sketch.
 ################################################
 
 import serial
-import sys
 
 # Assign Arduino's serial port address
 #   Windows example
@@ -24,21 +23,9 @@ import sys
 #     usbport = '/dev/ttyUSB0'
 #   MacOSX example
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
-
+usbport0 = '/dev/ttyACM0'
+usbport1 = '/dev/ttyACM1'
 baud_rate = 9600
-
-if sys.platform[0:5] == 'linux':
-    usbport0 = '/dev/ttyACM0'
-    usbport1 = '/dev/ttyACM1'
-elif sys.platform[0:3] == 'win':
-    usbport0 = 'COM3'
-    usbport1 = 'COM5'
-elif sys.platform == 'darwin' or sys.platform == 'mac':
-    usbport0 = '/dev/tty.usbserial-FTALLOK2'
-    usbport1 = '/dev/tty.usbserial-FTALLOK3'
-else:
-    print "\nSystem not supported, exiting... "
-    quit()
 
 # Set up serial baud rate
 try:

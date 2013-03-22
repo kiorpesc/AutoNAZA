@@ -1,13 +1,15 @@
 import socket
 import sys
 
-#conn, s
+conn = 0
+s = 0
 
 def create_socket():
 
-    HOST = ''
+    HOST = '0.0.0.0'
     PORT = 8888
 
+    global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print 'Socket created'
 
@@ -21,7 +23,8 @@ def create_socket():
 
     s.listen(10)
     print 'Socket now listening'
-
+    
+    global conn
     conn, addr = s.accept()
 
     print 'Connected with ' + addr[0] + ':' + str(addr[1])
@@ -34,8 +37,11 @@ def create_socket():
         #    conn.sendall(control)
 
 def send_command(s):
+    global conn
     conn.sendall(s)
 
 def close_socket():
+    global conn
+    global s
     conn.close()
     s.close()
