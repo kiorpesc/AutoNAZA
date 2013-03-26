@@ -26,7 +26,7 @@ def get_joy_pos():
                 buttons[x] = 1
             else:
                 buttons[x] = 0
-        time.sleep(0.03)
+        time.sleep(0.05)
 
 def convert_buttons():
     if buttons[2] == 1 and buttons[4] == 1:

@@ -6,7 +6,7 @@ s = 0
 
 def create_socket():
 
-    HOST = '0.0.0.0'
+    HOST = ''
     PORT = 8888
 
     global s
