@@ -28,6 +28,14 @@ def get_joy_pos():
                 buttons[x] = 0
         time.sleep(0.03)
 
+def convert_buttons():
+    if buttons[2] == 1 and buttons[4] == 1:
+        pass
+    elif buttons[2] == 1:
+        serv[5] = 95
+    elif buttons[4] == 1:
+        serv[5] = 28
+
 def show_joy_pos():
         print serv
         print buttons
@@ -35,6 +43,7 @@ def show_joy_pos():
 def control_loop():
     while True:
         get_joy_pos()
+        convert_buttons()
         show_joy_pos()
         control_server.send_command(command_string())
 

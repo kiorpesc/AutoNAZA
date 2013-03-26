@@ -6,7 +6,7 @@ s = 0
 
 def create_socket():
 
-    HOST = ''
+    HOST = '0.0.0.0'
     PORT = 8888
 
     global s
@@ -32,9 +32,6 @@ def create_socket():
     data = conn.recv(10)
     if data == 'AutoNAZAOn':
         conn.sendall('potatoTime')
-        #for x in range(10):
-        #    control = chr(255) + chr(90) + chr(90) + chr(90) + chr(0) + chr(95) + chr(90) + chr(90) + chr(x) + chr(254)
-        #    conn.sendall(control)
 
 def send_command(s):
     global conn

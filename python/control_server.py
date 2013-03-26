@@ -6,11 +6,12 @@ s = 0
 
 def create_socket():
 
-    HOST = ''
+    HOST = '0.0.0.0'
     PORT = 8888
 
     global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     print 'Socket created'
 
     try:
