@@ -6,7 +6,7 @@ s = 0
 
 def create_socket():
 
-    HOST = ''
+    HOST = '0.0.0.0'
     PORT = 8888
 
     global s
@@ -36,7 +36,12 @@ def create_socket():
 
 def send_command(s):
     global conn
-    conn.sendall(s)
+    try:
+        conn.sendall(s)
+    except:
+        print 'Socket lost, closing.'
+        close_socket()
+        sys.exit()
 
 def close_socket():
     global conn

@@ -4,8 +4,13 @@ import sys
 import time
 import control_server
 
+# in Windows, axis 3 is Throttle, 4 is rudder
+# in Linux, axis 4 is Throttle, 3 is rudder.
+# this is a pain in the ass.
+
 joy = []
 axes = []
+# START,X,Y,Z,THROTTLE,Atti/Man,hat,hat,failsafe,END
 serv = [255, 90, 90, 90, 0, 95, 90, 90, 0, 254]
 buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -13,6 +18,8 @@ def command_string():
     output = ''
     for x in serv:
         output += chr(x)
+    if sys.platform == 'win32':
+	    output = output[0:3] + output[4] + output[3] + output[5:]
     return output
 
 def get_joy_pos():
@@ -35,6 +42,17 @@ def convert_buttons():
         serv[5] = 95
     elif buttons[4] == 1:
         serv[5] = 28
+	#failsafe	
+    if buttons[7] == 1:
+        serv[8] = 180
+	#deactivate failsafe	
+    if buttons[6] == 1:
+        serv[8] = 0
+    #arm motors
+    if buttons[11] == 1:
+        serv[8] = 90
+    if buttons[11] == 0 and serv[8] != 180:
+        serv[8] = 0	
 
 def show_joy_pos():
         print serv

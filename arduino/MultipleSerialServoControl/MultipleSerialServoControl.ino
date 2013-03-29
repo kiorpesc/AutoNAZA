@@ -58,6 +58,7 @@ int adjust[6];        //might be used for manual calibration
 int i;               // iterator
 
 int userPos;
+unsigned long lastTime;    //increments at every read in which there is not enough data
 
 void setup() 
 {    
@@ -73,6 +74,7 @@ void setup()
   delay(5000);
   
   // Attach each Servo object to a digital pin
+  //aileron should be 3 on UNO, 4 on micro
   aileron.attach(3);
   elevator.attach(5);
   throttle.attach(6);
@@ -113,13 +115,24 @@ void loop()
       // Change to assign to variables, need constant control input
       
       pos[servo] = map(userPos, 0, 180, minPulse, maxPulse);
-
+      
     }
-
+    //millis() is number of milliseconds since Arduino boot
+    lastTime = millis();
   }
+  
+  //FAILSAFE -- NO SERIAL DATA FOR PERIOD OF TIME
+  if (millis() - lastTime > 60000) {
+      pos[1] = map(90, 0, 180, minPulse, maxPulse);
+      pos[2] = map(90, 0, 180, minPulse, maxPulse);
+      //swap 3 and 4 because of joystick axis order
+      pos[4] = map(108, 0, 180, minPulse, maxPulse;	//throttle
+      pos[3] = map(90, 0, 180, minPulse, maxPulse);	//rudder
+      pos[5] = map(95, 0, 180, minPulse, maxPulse);
+  } 
       aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
       elevator.writeMicroseconds(pos[2]);
-      throttle.writeMicroseconds(pos[3]);
-      rudder.writeMicroseconds(pos[4]);
+      throttle.writeMicroseconds(pos[4]);	//
+      rudder.writeMicroseconds(pos[3]);
       gear.writeMicroseconds(pos[5]);
 }
