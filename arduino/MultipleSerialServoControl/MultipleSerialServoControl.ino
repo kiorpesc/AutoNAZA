@@ -132,10 +132,10 @@ void loop()
       
       //check throttle level... if already below value, leave it low.
       //otherwise, lower it to (hopefully) descend
-      if (pos[4] >= 115){ ; }
-      else {
-        pos[4] = map(117, 0, 180, minPulse, maxPulse);	// lower throttle to 35% to bring craft down at non-catastrophic speed.
+      if (pos[4] < map(117, 0, 180, minPulse, maxPulse)){ 
+        pos[4] = map(117, 0, 180, minPulse, maxPulse); 
       }
+     
   } 
       aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
       elevator.writeMicroseconds(pos[2]);
