@@ -4,18 +4,14 @@ import time
 import servo
 #from RPIO import PWM
 
-#ailerons = PWM.Servo()
-#elevators = PWM.Servo()
-#rudder = PWM.Servo()
-#throttle = PWM.Servo()
-#gear = PWM.Servo()
-
 #servos = [ailerons, elevators, rudder, throttle, gear]
 #servo_gpio = [2, 3, 27, 17, 22]
+
 last = chr(255) + chr(90) + chr(90) + chr(90) + chr(0) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
 
 #LOW_PULSE = 1050
 #HIGH_PULSE = 1950
+DEAD_RADIUS = 15
 
 def arm_motors():
     servo.move(1, 0)
@@ -29,10 +25,13 @@ def map_val(val, in_low, in_high, out_low, out_high):
     # in_high = 180
     # out_low = LOW_PULSE
     # out_high = HIGH_PULSE
-    if val >= 85 and val <= 95:
+    scaled_val = float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
+    if val >= (90 - DEAD_RADIUS) and val <= (90 + DEAD_RADIUS):
         return 90
+    elif val < 90 - DEAD_RADIUS:
+        return scaled_val + float(DEAD_RADIUS)/2
     else:
-        return float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
+        return scaled_val - float(DEAD_RADIUS)/2
 
 # convert received string to ASCII values and send servo commands
 def convert(s):
@@ -66,8 +65,8 @@ while True:
 
         print 'Socket Created'
 
-        # host = 'exabase.org'
-        host = '192.168.1.2'
+        host = 'exabase.org'
+        #host = '192.168.1.21'
         port = 8888
 
         try:
