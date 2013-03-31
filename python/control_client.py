@@ -2,15 +2,11 @@ import socket
 import sys
 import time
 import servo
-#from RPIO import PWM
 
-#servos = [ailerons, elevators, rudder, throttle, gear]
-#servo_gpio = [2, 3, 27, 17, 22]
+# initial data
+# START BYTE, X, Y, Z, THROTTLE, MODE, HAT X, HAT Y, FAILSAFE/ARM, END BYTE
+last = chr(255) + chr(90) + chr(90) + chr(90) + chr(180) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
 
-last = chr(255) + chr(90) + chr(90) + chr(90) + chr(0) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
-
-#LOW_PULSE = 1050
-#HIGH_PULSE = 1950
 DEAD_RADIUS = 15
 
 def arm_motors():
@@ -19,8 +15,9 @@ def arm_motors():
     servo.move(3, 0)
     servo.move(4, 180)
 
+#scales input values, also takes care of dead zone for joystick
 def map_val(val, in_low, in_high, out_low, out_high):
-    # scale like farenheit to celsius
+    global DEAD_RADIUS
     # in_low = 0
     # in_high = 180
     # out_low = LOW_PULSE
@@ -35,7 +32,7 @@ def map_val(val, in_low, in_high, out_low, out_high):
 
 # convert received string to ASCII values and send servo commands
 def convert(s):
-    global last, servo_gpio, servos
+    global last
     values = map(ord, s)
     output = ''
     #send servo commands to Arduino based on command string
@@ -50,7 +47,6 @@ def convert(s):
                     mapped = int(map_val(values[x], 0, 180, 45, 135))
                     servo.move(x, mapped)
                     output += ' | ' + str(mapped) + ','
-                    #servos[x-1].set_servo(servo_gpio[x-1], mapped)
                 else:
                     servo.move(x, values[x])
                     output += ' | '
@@ -58,59 +54,70 @@ def convert(s):
     print output
     last = s
 
-while True:
-    #this should all be wrapped in a main function
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        print 'Socket Created'
-
-        host = 'exabase.org'
-        #host = '192.168.1.21'
-        port = 8888
-
+def main():
+    while True:
+        #this should all be wrapped in a main function
         try:
-            remote_ip = socket.gethostbyname( host )
-        except socket.gaierror:
-            print 'Hostname could not be resolved.  Exiting'
-            sys.exit()
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(2)
 
-        print 'Ip address of ' + host + ' is ' + remote_ip
-    
-        s.connect((remote_ip, port))
+            print 'Socket Created'
 
-        print 'Socket Connected to ' + host + ' on ip ' + remote_ip
+            #host = 'exabase.org'
+            #host = '192.168.1.21'
+            host = 'localhost'
+            port = 8888
 
-        message = "AutoNAZAOn"
-
-        # Authorization?  Expect correct message in reply
-        # if not correct, do not start receiving data
-
-        try:
-            s.sendall(message)
-            print 'Message sent successfully'
-        
-            # reply will be 'potatoTime' for now
-            reply = s.recv(10)
-    
-            print reply
-         
-            #may change message length for more buttons
             try:
-                while True:
-                    reply = s.recv(10)
-                    convert(reply)
-            # handle IndexError if data received is to short
-            # (i.e. stream cut off)
-            except: #socket.error, msg:
-                #need to close socket in case of errors
-                s.close()
-                print 'CONNECTION LOST: ATTEMPTING RECONNECT -- '# + msg[1]
+                remote_ip = socket.gethostbyname( host )
+            except socket.gaierror:
+                print 'Hostname could not be resolved.  Exiting'
+                sys.exit()
 
-        #loop to beginning
+            print 'Ip address of ' + host + ' is ' + remote_ip
+        
+            s.connect((remote_ip, port))
+
+            print 'Socket Connected to ' + host + ' on ip ' + remote_ip
+
+            message = "AutoNAZAOn"
+
+            # Authorization?  Expect correct message in reply
+            # if not correct, do not start receiving data
+
+            try:
+                s.sendall(message)
+                print 'Message sent'
+            
+                # reply will be 'potatoTime' for now
+                reply = s.recv(10)
+    
+                print reply
+
+                
+                #may change message length for more buttons
+                try:
+                    while True:
+                        # if no data is received, socket times out,
+                        # throws exception, and the socket is closed and reopened
+                        reply = s.recv(10)
+                        convert(reply)
+                        #this will eventually be used to send sensor data back to command
+                        s.sendall(last)
+                except: 
+                    s.close()
+                    print 'CONNECTION LOST: ATTEMPTING RECONNECT -- '# + msg[1]
+
+            #loop to beginning
+            except socket.error, msg:
+                print 'Send failed: ' + msg[1]
+
         except socket.error, msg:
-            print 'Send failed: ' + msg[1]
-            sys.exit()
+            print 'Failed to create socket. Error code: ' + str(msg[0]) + ' Error message: ' + msg[1]
 
-    except socket.error, msg:
-        print 'Failed to create socket. Error code: ' + str(msg[0]) + ' Error message: ' + msg[1]
+
+# Allow use as a module or standalone script
+if __name__ == "__main__":
+    main()
+
+

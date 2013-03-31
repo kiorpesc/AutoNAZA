@@ -10,7 +10,7 @@ import control_server
 
 joy = []
 axes = []
-# START,X,Y,Z,THROTTLE,Atti/Man,hat,hat,failsafe,END
+# START,X,Y,Z,THROTTLE,Atti/Man,hat x,hat y,failsafe,END
 serv = [255, 90, 90, 90, 0, 95, 90, 90, 0, 254]
 buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -18,16 +18,18 @@ def command_string():
     output = ''
     for x in serv:
         output += chr(x)
+    # if Windows, swap Rudder and Throttle
     if sys.platform == 'win32':
 	    output = output[0:3] + output[4] + output[3] + output[5:]
     return output
 
 def get_joy_pos():
         pygame.event.pump()
+        #read axes
         for x in range(1, 5):
             pos = joy[0].get_axis(x - 1)
             serv[x] = int(round(pos * 90, 0) + 90)
-        # reading buttons in this way will result in missed or duplicate inputs
+        # read buttons
         for x in range(12):
             if joy[0].get_button(x):
                 buttons[x] = 1
@@ -64,6 +66,10 @@ def control_loop():
         convert_buttons()
         show_joy_pos()
         control_server.send_command(command_string())
+        if control_server.get_reply():
+            pass
+        else:
+            break
 
 def main():
     #loop, if socket recieve fails, retry.
@@ -84,6 +90,7 @@ def main():
                 print "Joystick %d: " % (i) + joy[i].get_name()
             print "Depress joystick button 6 to quit.\n"
             control_loop()
+            control_server.close_socket()
         except:
             control_server.close_socket()
 
