@@ -85,7 +85,7 @@ def main():
             print "Depress joystick button 6 to quit.\n"
             control_loop()
         except:
-            pass
+            control_server.close_socket()
 
 # Allow use as a module or standalone script
 if __name__ == "__main__":

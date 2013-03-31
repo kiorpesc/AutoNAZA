@@ -127,7 +127,7 @@ void loop()
       pos[1] = map(90, 0, 180, minPulse, maxPulse); //lock X
       pos[2] = map(90, 0, 180, minPulse, maxPulse); //lock Y
       //swap 3 and 4 because of joystick axis order
-      pos[4] = map(115, 0, 180, minPulse, maxPulse;	// lower throttle to bring craft down at non-catastrophic speed.
+      pos[4] = map(115, 0, 180, minPulse, maxPulse);	// lower throttle to bring craft down at non-catastrophic speed.
       pos[3] = map(90, 0, 180, minPulse, maxPulse);	// lock rudder
       pos[5] = map(95, 0, 180, minPulse, maxPulse); // stay in attitude mode
   } 
