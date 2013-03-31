@@ -121,14 +121,15 @@ void loop()
     lastTime = millis();
   }
   
-  //FAILSAFE -- NO SERIAL DATA FOR PERIOD OF TIME
-  if (millis() - lastTime > 60000) {
-      pos[1] = map(90, 0, 180, minPulse, maxPulse);
-      pos[2] = map(90, 0, 180, minPulse, maxPulse);
+  //FAILSAFE -- NO SERIAL DATA FOR 2 SECONDS -- only happens if script crashes.
+  //Need to reinitialize python script with set of safe values.
+  if (millis() - lastTime > 2000) {
+      pos[1] = map(90, 0, 180, minPulse, maxPulse); //lock X
+      pos[2] = map(90, 0, 180, minPulse, maxPulse); //lock Y
       //swap 3 and 4 because of joystick axis order
-      pos[4] = map(108, 0, 180, minPulse, maxPulse;	//throttle
-      pos[3] = map(90, 0, 180, minPulse, maxPulse);	//rudder
-      pos[5] = map(95, 0, 180, minPulse, maxPulse);
+      pos[4] = map(115, 0, 180, minPulse, maxPulse;	// lower throttle to bring craft down at non-catastrophic speed.
+      pos[3] = map(90, 0, 180, minPulse, maxPulse);	// lock rudder
+      pos[5] = map(95, 0, 180, minPulse, maxPulse); // stay in attitude mode
   } 
       aileron.writeMicroseconds(pos[1]);    // move servo1 to 'pos'
       elevator.writeMicroseconds(pos[2]);

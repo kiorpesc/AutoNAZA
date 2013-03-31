@@ -66,21 +66,26 @@ def control_loop():
         control_server.send_command(command_string())
 
 def main():
-    control_server.create_socket()
-    pygame.joystick.init()
-    pygame.display.init()
-    if not pygame.joystick.get_count():
-        print "\nPlease connect a joystick and run again.\n"
-        quit()
-    print "\n%d joystick(s) detected." % pygame.joystick.get_count()
-    for i in range(pygame.joystick.get_count()):
-        myjoy = pygame.joystick.Joystick(i)
-        myjoy.init()
-        joy.append(myjoy)
-        print "Joystick %d: " % (i) + joy[i].get_name()
-    print "Depress joystick button 6 to quit.\n"
-    control_loop()
-
+    #loop, if socket recieve fails, retry.
+    #need to check for incomplete packets on client
+    while True:
+        try:
+            control_server.create_socket()
+            pygame.joystick.init()
+            pygame.display.init()
+            if not pygame.joystick.get_count():
+                print "\nPlease connect a joystick and run again.\n"
+                quit()
+            print "\n%d joystick(s) detected." % pygame.joystick.get_count()
+            for i in range(pygame.joystick.get_count()):
+                myjoy = pygame.joystick.Joystick(i)
+                myjoy.init()
+                joy.append(myjoy)
+                print "Joystick %d: " % (i) + joy[i].get_name()
+            print "Depress joystick button 6 to quit.\n"
+            control_loop()
+        except:
+            pass
 
 # Allow use as a module or standalone script
 if __name__ == "__main__":
