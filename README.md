@@ -3,6 +3,9 @@ AutoNAZA
 
 Using a Raspberry Pi and an Arduino Micro with the DJI NAZA flight controller to implement modular autopilot.
 
+NEW - now also testing using a BeagleBone Black (which has built in PWM outputs)
+Will branch accordingly.
+
 DO NOT USE THIS YET.  It is still in very early testing,
 and trying to use it will likely result in any one of numerous dangerous situations.
 Your multirotor might fly off and never return.
