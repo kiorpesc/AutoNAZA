@@ -1,0 +1,10 @@
+TODO:
+- integrate the BBB's built-in PWM calls into the python code for the client,
+   replacing the arduino servo calls... and TEST the crap out of it.
+- refine error handling to allow the user to more easily close the scripts
+
+
+EVENTUALLY:
+- generalize for different joystick/gamepad/controller options
+- detail necessary init scripts and extra hardware for better functionality
+
