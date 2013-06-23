@@ -14,8 +14,11 @@ pins = ['P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
 
 def init_pwm():
     PWM.start(pins[0], 7.5)
+    time.sleep(0.5)
     PWM.stop(pins[0])
-
+    time.sleep(0.5)
+    # start PWM output at 50Hz, all middle except throttle
+    # 1.5/20 = .075 = 7.5%
     PWM.start(pins[0], 7.5, 50)
     PWM.start(pins[1], 7.5, 50)
     PWM.start(pins[2], 7.5, 50)
@@ -41,12 +44,12 @@ def dead_zone(val):
     global DEAD_RADIUS
     
     #add dead zone as necessary (maybe should handle deadzone in server code?)
-    if val >= (7.5 - DEAD_RADIUS) and scaled_val <= (7.5 + DEAD_RADIUS):
+    if val >= (7.5 - DEAD_RADIUS) and val <= (7.5 + DEAD_RADIUS):
         return 7.5
     elif val < 7.5 - DEAD_RADIUS:
-        return val + float(DEAD_RADIUS)/2.0
+        return float(val) + float(DEAD_RADIUS)/2.0
     else:
-        return val - float(DEAD_RADIUS)/2.0
+        return float(val) - float(DEAD_RADIUS)/2.0
 
 #map the input (0 - 180) to the proper output value (5.0 - 10.0)
 def map_val(val, in_low, in_high, out_low, out_high):
@@ -66,13 +69,15 @@ def convert(s):
         else:
             if values[x] != last[x]:
                 mapped = map_val(values[x], 0, 180, 5.0, 10.0)
-                if x < 3:
-                    #calculate dead zone if necessary
-                    PWM.set_duty_cycle(pins[x], dead_zone(mapped))
-                    output += ' | ' + str(mapped) + ','
+                if x < 4:
+                    #calculate dead zone if necessary - this includes throttle
+                    #just to make it easier to stay level using NAZA atti mode
+                    adjusted = dead_zone(mapped)                      
+                    #PWM.set_duty_cycle(pins[x], dead_zone(mapped))
+                    output += ' | ' + str(adjusted) + ','
                 else:
-                    #throttle and buttons get no deadzone alteration
-                    PWM.set_duty_cycle(pins[x], mapped)
+                    #buttons get no deadzone alteration
+                    #PWM.set_duty_cycle(pins[x], mapped)
                     output += ' | '
         output += str(values[x]) + ' | '
     print output
@@ -91,9 +96,9 @@ def main():
 
             print 'Socket Created'
 
-            #host = 'exabase.org'
+            host = 'exabase.org'
             #host = '192.168.1.21'
-            host = 'localhost'
+            #host = 'localhost'
             port = 8888
 
             try:
@@ -139,7 +144,7 @@ def main():
 
             #loop to beginning
             except socket.error, msg:
-                print 'Send failed: ' + msg[1]
+                print 'Send failed: '
 
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' Error message: ' + msg[1]
