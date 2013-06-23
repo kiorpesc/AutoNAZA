@@ -1,34 +1,56 @@
 import socket
 import sys
 import time
-import servo
+import BBIO.PWM as PWM
 
 # initial data
 # START BYTE, X, Y, Z, THROTTLE, MODE, HAT X, HAT Y, FAILSAFE/ARM, END BYTE
 last = chr(255) + chr(90) + chr(90) + chr(90) + chr(180) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
 
-DEAD_RADIUS = 15
+DEAD_RADIUS = 0.41667
+#pins    roll     pitch     yaw    throttle   aux
+pins = ['P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
+
+
+def init_pwm():
+    PWM.start(pins[0], 7.5)
+    PWM.stop(pins[0])
+
+    PWM.start(pins[0], 7.5, 50)
+    PWM.start(pins[1], 7.5, 50)
+    PWM.start(pins[2], 7.5, 50)
+    PWM.start(pins[3], 10, 50)
+    PWM.on(pins[0])
+    PWM.on(pins[1])
+    PWM.on(pins[2])
+    PWM.on(pins[3])
 
 def arm_motors():
+    PWM.set_duty_cycle(pins[0], 5)
+    PWM.set_duty_cycle(pins[1], 10)
+    PWM.set_duty_cycle(pins[2], 5)
+    PWM.set_duty_cycle(pins[3], 10)
+'''
     servo.move(1, 0)
     servo.move(2, 180)
     servo.move(3, 0)
     servo.move(4, 180)
-
-#scales input values, also takes care of dead zone for joystick
-def map_val(val, in_low, in_high, out_low, out_high):
+'''
+#dead zone for joystick - only applied to x,y,z axes
+def dead_zone(val):
     global DEAD_RADIUS
-    # in_low = 0
-    # in_high = 180
-    # out_low = LOW_PULSE
-    # out_high = HIGH_PULSE
-    scaled_val = float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
-    if val >= (90 - DEAD_RADIUS) and val <= (90 + DEAD_RADIUS):
-        return 90
-    elif val < 90 - DEAD_RADIUS:
-        return scaled_val + float(DEAD_RADIUS)/2
+    
+    #add dead zone as necessary (maybe should handle deadzone in server code?)
+    if val >= (7.5 - DEAD_RADIUS) and scaled_val <= (7.5 + DEAD_RADIUS):
+        return 7.5
+    elif val < 7.5 - DEAD_RADIUS:
+        return val + float(DEAD_RADIUS)/2.0
     else:
-        return scaled_val - float(DEAD_RADIUS)/2
+        return val - float(DEAD_RADIUS)/2.0
+
+#map the input (0 - 180) to the proper output value (5.0 - 10.0)
+def map_val(val, in_low, in_high, out_low, out_high):
+    return float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
 
 # convert received string to ASCII values and send servo commands
 def convert(s):
@@ -43,20 +65,26 @@ def convert(s):
             arm_motors()
         else:
             if values[x] != last[x]:
-                if x < 4:
-                    mapped = int(map_val(values[x], 0, 180, 45, 135))
-                    servo.move(x, mapped)
+                mapped = map_val(values[x], 0, 180, 5.0, 10.0)
+                if x < 3:
+                    #calculate dead zone if necessary
+                    PWM.set_duty_cycle(pins[x], dead_zone(mapped))
                     output += ' | ' + str(mapped) + ','
                 else:
-                    servo.move(x, values[x])
+                    #throttle and buttons get no deadzone alteration
+                    PWM.set_duty_cycle(pins[x], mapped)
                     output += ' | '
         output += str(values[x]) + ' | '
     print output
     last = s
 
 def main():
+    init_pwm()
     while True:
-        #this should all be wrapped in a main function
+        # as this stands, it is impossible to get out of this script without a SIGKILL.
+        # it just keeps looping, trying to make a socket connection.
+        # this means that it will not exit cleanly, leaving the PWM pins enabled
+        # THIS NEEDS TO CHANGE -- too any try/except blocks, not enough proper error handling.
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(2)
@@ -82,7 +110,8 @@ def main():
 
             message = "AutoNAZAOn"
 
-            # Authorization?  Expect correct message in reply
+            # TODO: Complex authorization?  
+            # Expect correct message
             # if not correct, do not start receiving data
 
             try:
@@ -98,8 +127,8 @@ def main():
                 #may change message length for more buttons
                 try:
                     while True:
-                        # if no data is received, socket times out,
-                        # throws exception, and the socket is closed and reopened
+                        # if no data is received, the socket times out,
+                        # which throws an exception, and the socket is closed and reopened
                         reply = s.recv(10)
                         convert(reply)
                         #this will eventually be used to send sensor data back to command
