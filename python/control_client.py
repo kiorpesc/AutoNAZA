@@ -8,31 +8,33 @@ import BBIO.PWM as PWM
 last = chr(255) + chr(90) + chr(90) + chr(90) + chr(180) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
 
 DEAD_RADIUS = 0.41667
-#pins    roll     pitch     yaw    throttle   aux
-pins = ['P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
+#pins           roll     pitch     yaw    throttle   aux
+pins = [ ' ', 'P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
 
 
 def init_pwm():
-    PWM.start(pins[0], 7.5)
+    PWM.start(pins[1], 7.5)
     time.sleep(0.5)
-    PWM.stop(pins[0])
+    PWM.stop(pins[1])
     time.sleep(0.5)
     # start PWM output at 50Hz, all middle except throttle
     # 1.5/20 = .075 = 7.5%
-    PWM.start(pins[0], 7.5, 50)
     PWM.start(pins[1], 7.5, 50)
     PWM.start(pins[2], 7.5, 50)
-    PWM.start(pins[3], 10, 50)
-    PWM.on(pins[0])
+    PWM.start(pins[3], 7.5, 50)
+    PWM.start(pins[4], 10, 50)
+    PWM.start(pins[5], 7.64, 50)
     PWM.on(pins[1])
     PWM.on(pins[2])
     PWM.on(pins[3])
+    PWM.on(pins[4])
+    PWM.on(pins[5])
 
 def arm_motors():
-    PWM.set_duty_cycle(pins[0], 5)
-    PWM.set_duty_cycle(pins[1], 10)
-    PWM.set_duty_cycle(pins[2], 5)
-    PWM.set_duty_cycle(pins[3], 10)
+    PWM.set_duty_cycle(pins[1], 5)
+    PWM.set_duty_cycle(pins[2], 10)
+    PWM.set_duty_cycle(pins[3], 5)
+    PWM.set_duty_cycle(pins[4], 10)
 '''
     servo.move(1, 0)
     servo.move(2, 180)
@@ -73,12 +75,13 @@ def convert(s):
                     #calculate dead zone if necessary - this includes throttle
                     #just to make it easier to stay level using NAZA atti mode
                     adjusted = dead_zone(mapped)                      
-                    #PWM.set_duty_cycle(pins[x], dead_zone(mapped))
+                    PWM.set_duty_cycle(pins[x], adjusted)
                     output += ' | ' + str(adjusted) + ','
                 else:
                     #buttons get no deadzone alteration
-                    #PWM.set_duty_cycle(pins[x], mapped)
+                    PWM.set_duty_cycle(pins[x], float(mapped))
                     output += ' | '
+
         output += str(values[x]) + ' | '
     print output
     last = s
@@ -96,7 +99,8 @@ def main():
 
             print 'Socket Created'
 
-            host = 'exabase.org'
+            host = '69.249.183.97' 
+            #host = 'exabase.org'
             #host = '192.168.1.21'
             #host = 'localhost'
             port = 8888
@@ -106,6 +110,8 @@ def main():
             except socket.gaierror:
                 print 'Hostname could not be resolved.  Exiting'
                 sys.exit()
+            except KeyboardInterrupt:
+                raise
 
             print 'Ip address of ' + host + ' is ' + remote_ip
         
@@ -138,6 +144,8 @@ def main():
                         convert(reply)
                         #this will eventually be used to send sensor data back to command
                         s.sendall(last)
+                except KeyboardInterrupt:
+                    raise
                 except: 
                     s.close()
                     print 'CONNECTION LOST: ATTEMPTING RECONNECT -- '# + msg[1]
@@ -145,9 +153,18 @@ def main():
             #loop to beginning
             except socket.error, msg:
                 print 'Send failed: '
+            except KeyboardInterrupt:
+                raise
 
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' Error message: ' + msg[1]
+        except KeyboardInterrupt:
+               print 'Closing socket...'
+               s.close()
+               print 'Shutting down PWM outputs...'
+               PWM.cleanup()
+               time.sleep(.5)
+               sys.exit()
 
 
 # Allow use as a module or standalone script
