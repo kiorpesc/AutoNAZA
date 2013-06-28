@@ -91,6 +91,10 @@ def main():
             print "Depress joystick button 6 to quit.\n"
             control_loop()
             control_server.close_socket()
+        except KeyboardInterrupt:
+            print 'Closing socket'
+            control_server.close_socket()
+            sys.exit()
         except:
             control_server.close_socket()
 
