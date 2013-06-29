@@ -6,7 +6,8 @@ import control_server
 
 # in Windows, axis 3 is Throttle, 4 is rudder
 # in Linux, axis 4 is Throttle, 3 is rudder.
-# this is a pain in the ass.
+# this is a pain in the ass, so it's been
+# taken care of in the command_string() method
 
 joy = []
 axes = []
@@ -37,29 +38,38 @@ def get_joy_pos():
                 buttons[x] = 0
         time.sleep(0.05)
 
+# handle button presses, being careful
+# not to allow strange combinations of buttons
 def convert_buttons():
+
+    #flight mode switch
     if buttons[2] == 1 and buttons[4] == 1:
         pass
     elif buttons[2] == 1:
         serv[5] = 95
     elif buttons[4] == 1:
         serv[5] = 28
-	#failsafe	
+
+    #failsafe	
     if buttons[7] == 1:
         serv[8] = 180
-	#deactivate failsafe	
+    #deactivate failsafe	
     if buttons[6] == 1:
         serv[8] = 0
+
     #arm motors
     if buttons[11] == 1:
         serv[8] = 90
     if buttons[11] == 0 and serv[8] != 180:
         serv[8] = 0	
 
+#quick print of array contents for debug purposes
 def show_joy_pos():
         print serv
         print buttons
 
+#the conversion and data transfer methods are called here
+#and handling of the received sensor data will be done here as well.
 def control_loop():
     while True:
         get_joy_pos()
@@ -67,6 +77,7 @@ def control_loop():
         show_joy_pos()
         control_server.send_command(command_string())
         if control_server.get_reply():
+            #convert reply to something useful
             pass
         else:
             break
@@ -77,6 +88,8 @@ def main():
     while True:
         try:
             control_server.create_socket()
+            
+            #pygame joystick initialization code
             pygame.joystick.init()
             pygame.display.init()
             if not pygame.joystick.get_count():
@@ -89,12 +102,18 @@ def main():
                 joy.append(myjoy)
                 print "Joystick %d: " % (i) + joy[i].get_name()
             print "Depress joystick button 6 to quit.\n"
+
+            #start loop to convert, send, and receive values
             control_loop()
+            
+            #if loop ends (somehow) close the socket cleanly
             control_server.close_socket()
+        #if Ctrl-C is pressed, close socket cleanly and exit
         except KeyboardInterrupt:
             print 'Closing socket'
             control_server.close_socket()
             sys.exit()
+        #otherwise, close the socket and wait for another connection
         except:
             control_server.close_socket()
 
