@@ -9,10 +9,15 @@ import control_server
 # this is a pain in the ass, so it's been
 # taken care of in the command_string() method
 
+# changing range from 0 - 250
+# midpoint is at 125
+# 95 approximates to 132
+# 28 approximates to 39
+
 joy = []
 axes = []
 # START,X,Y,Z,THROTTLE,Atti/Man,hat x,hat y,failsafe,END
-serv = [255, 90, 90, 90, 0, 95, 90, 90, 0, 254]
+serv = [255, 125, 125, 125, 0, 125, 125, 125, 0, 254]
 buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 def command_string():
@@ -29,7 +34,7 @@ def get_joy_pos():
         #read axes
         for x in range(1, 5):
             pos = joy[0].get_axis(x - 1)
-            serv[x] = int(round(pos * 90, 0) + 90)
+            serv[x] = int(round(pos * 125, 0) + 125)
         # read buttons
         for x in range(12):
             if joy[0].get_button(x):
@@ -46,21 +51,21 @@ def convert_buttons():
     if buttons[2] == 1 and buttons[4] == 1:
         pass
     elif buttons[2] == 1:
-        serv[5] = 95
+        serv[5] = 132
     elif buttons[4] == 1:
-        serv[5] = 28
+        serv[5] = 39
 
     #failsafe	
     if buttons[7] == 1:
-        serv[8] = 180
+        serv[8] = 250
     #deactivate failsafe	
     if buttons[6] == 1:
         serv[8] = 0
 
     #arm motors
     if buttons[11] == 1:
-        serv[8] = 90
-    if buttons[11] == 0 and serv[8] != 180:
+        serv[8] = 125
+    if buttons[11] == 0 and serv[8] != 250:
         serv[8] = 0	
 
 #quick print of array contents for debug purposes

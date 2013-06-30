@@ -5,7 +5,7 @@ import BBIO.PWM as PWM
 
 # initial data
 # START BYTE, X, Y, Z, THROTTLE, MODE, HAT X, HAT Y, FAILSAFE/ARM, END BYTE
-last = chr(255) + chr(90) + chr(90) + chr(90) + chr(180) + chr(95) + chr(90) + chr(90) + chr(0) + chr(254)
+last = chr(255) + chr(125) + chr(125) + chr(125) + chr(250) + chr(132) + chr(125) + chr(125) + chr(0) + chr(254)
 
 DEAD_RADIUS = 0.41667
 #pins           roll     pitch     yaw    throttle   aux
@@ -37,9 +37,9 @@ def arm_motors():
     PWM.set_duty_cycle(pins[4], 10)
 '''
     servo.move(1, 0)
-    servo.move(2, 180)
+    servo.move(2, 250)
     servo.move(3, 0)
-    servo.move(4, 180)
+    servo.move(4, 250)
 '''
 #dead zone for joystick - only applied to x,y,z axes
 def dead_zone(val):
@@ -64,13 +64,13 @@ def convert(s):
     output = ''
     #send servo commands to Arduino based on command string
     for x in range(1, 6):
-        if values[8] == 180:
+        if values[8] == 250:
             output = 'FAILSAFE MODE!!!!!!!!!!!!!!!!!!!!!!!'
-        elif values[8] == 90:
+        elif values[8] == 125:
             arm_motors()
         else:
             if values[x] != last[x]:
-                mapped = map_val(values[x], 0, 180, 5.0, 10.0)
+                mapped = map_val(values[x], 0, 250, 5.0, 10.0)
                 if x < 4:
                     #calculate dead zone if necessary - this includes throttle
                     #just to make it easier to stay level using NAZA atti mode
