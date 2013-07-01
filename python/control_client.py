@@ -12,7 +12,12 @@ DEAD_RADIUS = 0.41667
 pins = [ ' ', 'P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
 
 
+# safely initialize all PWM pins at 50Hz
 def init_pwm():
+    # due to a small issue with the library,
+    # the first pin initialized is not usable
+    # until it is stopped and started again
+    # after this, all pins work normally
     PWM.start(pins[1], 7.5)
     time.sleep(0.5)
     PWM.stop(pins[1])
@@ -30,29 +35,13 @@ def init_pwm():
     PWM.on(pins[4])
     PWM.on(pins[5])
 
+# overrides normal output when arm button is pressed
 def arm_motors():
     PWM.set_duty_cycle(pins[1], 5)
     PWM.set_duty_cycle(pins[2], 10)
     PWM.set_duty_cycle(pins[3], 5)
     PWM.set_duty_cycle(pins[4], 10)
-'''
-    servo.move(1, 0)
-    servo.move(2, 250)
-    servo.move(3, 0)
-    servo.move(4, 250)
 
-#dead zone for joystick - only applied to x,y,z axes
-def dead_zone(val):
-    global DEAD_RADIUS
-    
-    #add dead zone as necessary (maybe should handle deadzone in server code?)
-    if val >= (7.5 - DEAD_RADIUS) and val <= (7.5 + DEAD_RADIUS):
-        return 7.5
-    elif val < 7.5 - DEAD_RADIUS:
-        return float(val) + float(DEAD_RADIUS)/2.0
-    else:
-        return float(val) - float(DEAD_RADIUS)/2.0
-'''
 #map the input (0 - 180) to the proper output value (5.0 - 10.0)
 def map_val(val, in_low, in_high, out_low, out_high):
     return float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
@@ -71,17 +60,11 @@ def convert(s):
         else:
             if values[x] != last[x]:
                 mapped = map_val(values[x], 0, 250, 5.0, 10.0)
-                if x < 4:
-                    #calculate dead zone if necessary - this includes throttle
-                    #just to make it easier to stay level using NAZA atti mode
-                    #adjusted = dead_zone(mapped)                      
-                    PWM.set_duty_cycle(pins[x], float(mapped))
+                PWM.set_duty_cycle(pins[x], float(mapped))
+                if x < 4:                      
                     output += ' | ' + str(mapped) + ','
                 else:
-                    #buttons get no deadzone alteration
-                    PWM.set_duty_cycle(pins[x], float(mapped))
-                    output += ' | '
-
+                    output += ' | ' + str(mapped)
         output += str(values[x]) + ' | '
     print output
     last = s
@@ -92,7 +75,7 @@ def main():
         # as this stands, it is impossible to get out of this script without a SIGKILL.
         # it just keeps looping, trying to make a socket connection.
         # this means that it will not exit cleanly, leaving the PWM pins enabled
-        # THIS NEEDS TO CHANGE -- too any try/except blocks, not enough proper error handling.
+        # THIS NEEDS TO CHANGE -- too many try/except blocks, not enough proper error handling.
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(2)
