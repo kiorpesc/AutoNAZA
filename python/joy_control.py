@@ -9,6 +9,8 @@ import control_server
 # this is a pain in the ass, so it's been
 # taken care of in the command_string() method
 
+DEAD_RADIUS = 21
+
 # changing range from 0 - 250
 # midpoint is at 125
 # 95 approximates to 132
@@ -19,6 +21,22 @@ axes = []
 # START,X,Y,Z,THROTTLE,Atti/Man,hat x,hat y,failsafe,END
 serv = [255, 125, 125, 125, 0, 125, 125, 125, 0, 254]
 buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+def dead_zone(i):
+    if serv[i] >= (125-DEAD_RADIUS) and serv[i] <= (125+DEAD_RADIUS):
+        serv[i] =  125
+    elif serv[i] < 125-DEAD_RADIUS:
+        serv[i] = serv[i] + DEAD_RADIUS
+    else:
+        serv[i] = serv[i] - DEAD_RADIUS
+
+    #prevent invalid values
+    if serv[i] < 0:
+        serv[i] = 0
+    
+    if serv[i] > 250:
+        serv[i] = 250
+        
 
 def command_string():
     output = ''
@@ -35,6 +53,9 @@ def get_joy_pos():
         for x in range(1, 5):
             pos = joy[0].get_axis(x - 1)
             serv[x] = int(round(pos * 125, 0) + 125)
+            if x < 4:
+                # apply dead zone calcualtion to array item
+                dead_zone(x)
         # read buttons
         for x in range(12):
             if joy[0].get_button(x):

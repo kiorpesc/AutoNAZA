@@ -74,8 +74,8 @@ def convert(s):
                 if x < 4:
                     #calculate dead zone if necessary - this includes throttle
                     #just to make it easier to stay level using NAZA atti mode
-                    adjusted = dead_zone(mapped)                      
-                    PWM.set_duty_cycle(pins[x], adjusted)
+                    #adjusted = dead_zone(mapped)                      
+                    PWM.set_duty_cycle(pins[x], float(mapped))
                     output += ' | ' + str(adjusted) + ','
                 else:
                     #buttons get no deadzone alteration
