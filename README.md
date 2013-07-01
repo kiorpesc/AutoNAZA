@@ -15,9 +15,9 @@ DO NOT USE THIS CODE... at least until it has been thoroughly tested.
 First steps:
 ============
 
-DONE 1 - Control all NAZA inputs with arduino and python (yes, python).
+DONE 1 - Control all NAZA inputs with BeagleBone's PWM outputs.
 
-      -Using serial communications between python and arduino.
+      -Uses modified Adafruit-BBIO library - branch is available as one of my repositories.
       
 DONE 2 - Introduce pyGame to allow joystick control, test and tweak max values
 
