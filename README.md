@@ -1,10 +1,7 @@
-AutoNAZA
+AutoNAZA - beaglebone
 ========
 
-Using a Raspberry Pi and an Arduino Micro with the DJI NAZA flight controller to implement modular autopilot.
-
-NEW - now also testing using a BeagleBone Black (which has built in PWM outputs)
-Will branch accordingly.
+Using a BeagleBone Black's PWM output with the DJI NAZA flight controller to implement modular autopilot.
 
 DO NOT USE THIS YET.  It is still in very early testing,
 and trying to use it will likely result in any one of numerous dangerous situations.
@@ -28,12 +25,19 @@ DONE 2 - Introduce pyGame to allow joystick control, test and tweak max values
 
 DONE 3 - Control data can be sent via cellular data link to anywhere in the country with minimal (read:acceptable) delay
 
-      -Scripts still need better error handling in case of socket failure.
+      -Sends via TCP sockets, will try UDP as an alternative.
 
-4 - GPS location and compass heading
+4 - GPS location and compass heading - need external hardware (GPS, magnetometer)
 
 5 - Autonavigation - this includes waypoints, heading correction, ability to set speed, loiter at a waypoint
 
+      -Position hold relying on GPS only will be innacurate
+      -Altitude?
+
 6 - Auto takeoff and landing
 
-7 - Video recording/streaming via wifi link
+POC 7 - Video recording/streaming via wifi or cellular link
+
+      -GStreamer coupled with a webcam with hardware h264 encoding provides a stable and low-latency stream
+
+8 - Implement MAVLink commands for the system to make it work with existing ground control programs
