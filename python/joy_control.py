@@ -55,7 +55,10 @@ def get_joy_pos():
             serv[x] = int(round(pos * 125, 0) + 125)
             if x < 4:
                 # apply dead zone calcualtion to array item
-                dead_zone(x)
+                try:
+                    dead_zone(x)
+                except:
+                    print 'DEAD ZONE FAILED..........'
         # read buttons
         for x in range(12):
             if joy[0].get_button(x):

@@ -40,7 +40,7 @@ def arm_motors():
     servo.move(2, 250)
     servo.move(3, 0)
     servo.move(4, 250)
-'''
+
 #dead zone for joystick - only applied to x,y,z axes
 def dead_zone(val):
     global DEAD_RADIUS
@@ -52,7 +52,7 @@ def dead_zone(val):
         return float(val) + float(DEAD_RADIUS)/2.0
     else:
         return float(val) - float(DEAD_RADIUS)/2.0
-
+'''
 #map the input (0 - 180) to the proper output value (5.0 - 10.0)
 def map_val(val, in_low, in_high, out_low, out_high):
     return float(val) * float(out_high - out_low)/float(in_high - in_low) + float(out_low - in_low)
@@ -76,7 +76,7 @@ def convert(s):
                     #just to make it easier to stay level using NAZA atti mode
                     #adjusted = dead_zone(mapped)                      
                     PWM.set_duty_cycle(pins[x], float(mapped))
-                    output += ' | ' + str(adjusted) + ','
+                    output += ' | ' + str(mapped) + ','
                 else:
                     #buttons get no deadzone alteration
                     PWM.set_duty_cycle(pins[x], float(mapped))
