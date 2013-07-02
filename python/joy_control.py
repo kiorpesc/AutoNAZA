@@ -1,3 +1,4 @@
+import argparse
 import pygame
 import socket
 import sys
@@ -9,6 +10,7 @@ import control_server
 # this is a pain in the ass, so it's been
 # taken care of in the command_string() method
 
+SCALING = 100
 DEAD_RADIUS = 21
 
 # changing range from 0 - 250
@@ -22,6 +24,31 @@ axes = []
 serv = [255, 125, 125, 125, 0, 125, 125, 125, 0, 254]
 buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Start joystick server.')
+    parser.add_argument("-s","--scale",action="store",default=100,help="Control scaling percentage.")
+    parser.add_argument("-d","--dead-zone",action="store",default=21,help="Joystick dead zone radius as a percentage.")
+    args = vars(parser.parse_args())
+
+    #check for unsafe values - exit if unsafe
+    if int(args['dead_zone']) > 35 or int(args['dead_zone']) < 5:
+        print 'This dead zone should be between 5 and 35 (inclusive).  Exiting...'
+        sys.exit()
+    else:
+        DEAD_RADIUS = args['dead_zone']
+
+    if int(args['scale']) < 50 or int(args['scale']) > 100:
+        print 'Scale should be between 50 and 100 for safety.  Exiting...'
+        sys.exit()
+    else:
+        SCALING = args['scale']
+
+# very basic scaling
+def scale_axes():
+    for x in range(1, 5):
+        serv[x] = (serv[x] - 125) * (SCALING / 100) + 125
+
+# add dead zone to axes
 def dead_zone(i):
     if serv[i] >= (125-DEAD_RADIUS) and serv[i] <= (125+DEAD_RADIUS):
         serv[i] =  125
@@ -53,12 +80,10 @@ def get_joy_pos():
         for x in range(1, 5):
             pos = joy[0].get_axis(x - 1)
             serv[x] = int(round(pos * 125, 0) + 125)
-            if x < 4:
-                # apply dead zone calcualtion to array item
-                try:
-                    dead_zone(x)
-                except:
-                    print 'DEAD ZONE FAILED..........'
+            # if x < 4:
+            # apply dead zone calcualtion to all axes (incl throttle)
+            dead_zone(x)
+            
         # read buttons
         for x in range(12):
             if joy[0].get_button(x):
@@ -103,6 +128,7 @@ def control_loop():
     while True:
         get_joy_pos()
         convert_buttons()
+        scale_axes()
         show_joy_pos()
         control_server.send_command(command_string())
         if control_server.get_reply():
@@ -112,6 +138,7 @@ def control_loop():
             break
 
 def main():
+    parse_args()
     #loop, if socket recieve fails, retry.
     #need to check for incomplete packets on client
     while True:
