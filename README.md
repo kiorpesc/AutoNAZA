@@ -9,7 +9,7 @@ Your multirotor might fly off and never return.
 It might also come straight for you with its propellers going at full throttle.
 Or it might just slam itself into nearby obstacles.
 
-DO NOT USE THIS CODE... at least until it has been thoroughly tested.
+DO NOT USE THIS CODE... at least until it has been more thoroughly tested.
 
 
 First steps:
