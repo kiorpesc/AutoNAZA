@@ -1,0 +1,3 @@
+#pins    roll     pitch     yaw    throttle   aux
+pins = ['P9_14', 'P9_16', 'P8_13', 'P8_19', 'P9_22']
+
