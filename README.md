@@ -36,7 +36,7 @@ DONE 3 - Control data can be sent via cellular data link to anywhere in the coun
 
 6 - Auto takeoff and landing
 
-POC 7 - Video recording/streaming via wifi or cellular link
+DONE 7 - Video recording/streaming via wifi or cellular link
 
       -GStreamer coupled with a webcam with hardware h264 encoding provides a stable and low-latency stream
 
