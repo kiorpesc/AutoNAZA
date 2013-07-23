@@ -25,7 +25,7 @@ DONE 2 - Introduce pyGame to allow joystick control, test and tweak max values
 
 DONE 3 - Control data can be sent via cellular data link to anywhere in the country with minimal (read:acceptable) delay
 
-      -Sends via TCP sockets, will try UDP as an alternative.
+      -Sends data via TCP sockets, will try UDP as an alternative.
 
 4 - GPS location and compass heading - need external hardware (GPS, magnetometer)
 
